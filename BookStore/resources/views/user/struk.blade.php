@@ -60,7 +60,7 @@
 <body>
 
     <div class="header">
-        TOKO BUKU ARBOK<br>
+        BookStore<br>
         <small>Struk Pembelian #{{ $transaksi->id }}</small>
     </div>
 
@@ -98,7 +98,7 @@
     </table>
 
     <div class="footer">
-        Terima kasih telah berbelanja di Toko Buku Arbok 📚
+        Terima kasih telah berbelanja di BookStore 📚
     </div>
 
 </body>

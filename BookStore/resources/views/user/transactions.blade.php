@@ -2,44 +2,63 @@
 
 @section('content')
     <div class="container py-5">
-        <h2 class="text-center mb-4 text-white fw-bold">📦 Riwayat Transaksi</h2>
+        {{-- Judul Halaman --}}
+        <h2 class="text-center mb-4 fw-bold text-dark">📦 Riwayat Transaksi</h2>
 
         @forelse($transaksi as $trx)
-            <div class="card mb-4 border-start-5
-                            @if($trx->status === 'pending') border-warning 
-                            @elseif($trx->status === 'dikirim') border-primary 
-                            @elseif($trx->status === 'selesai') border-success 
-                            @else border-secondary @endif">
+            @php
+                $style = match ($trx->status) {
+                    'pending' => 'border-start border-4 border-warning bg-light',
+                    'dikirim' => 'border-start border-4 border-primary bg-light',
+                    'selesai' => 'border-start border-4 border-success bg-light',
+                    default => 'border-start border-4 border-secondary bg-light',
+                };
 
-                <div class="card-body d-flex justify-content-between align-items-center text-dark">
+                $badgeClass = match ($trx->status) {
+                    'pending' => 'bg-warning text-dark',
+                    'dikirim' => 'bg-primary text-white',
+                    'selesai' => 'bg-success text-white',
+                    default => 'bg-secondary text-white',
+                };
+
+                $badgeText = match ($trx->status) {
+                    'pending' => 'Menunggu Konfirmasi Admin',
+                    'dikirim' => 'Pesanan Dikirim',
+                    'selesai' => 'Pesanan Selesai',
+                    default => 'Status Tidak Diketahui',
+                };
+            @endphp
+
+            {{-- Card Transaksi --}}
+            <div class="card shadow-sm mb-4 {{ $style }}">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+                    {{-- Info Transaksi (Kiri) --}}
                     <div>
-                        <h5 class="card-title mb-2">
-                            🧾 <span class="text-muted">Invoice:</span> #{{ $trx->id }}
-                        </h5>
-                        <p class="mb-0">
-                            <strong>Status:</strong>
-                            <span class="badge 
-                                            @if($trx->status === 'pending') bg-warning text-dark
-                                            @elseif($trx->status === 'dikirim') bg-primary
-                                            @elseif($trx->status === 'selesai') bg-success
-                                            @else bg-secondary @endif">
-                                {{ ucfirst($trx->status) }}
-                            </span>
-                        </p>
+                        <h5 class="fw-semibold text-dark mb-2">📘 Pesanan #{{ $trx->id }}</h5>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong class="text-muted small">Status:</strong>
+                            <span class="badge rounded-pill {{ $badgeClass }}">{{ $badgeText }}</span>
+                        </div>
                     </div>
 
+                    {{-- Tombol Struk (masih disembunyikan) --}}
+                    {{--
                     <div class="d-flex gap-2">
-                        {{-- Tampilkan struk hanya jika status bukan pending --}}
                         @if ($trx->status !== 'pending')
-                            <a href="{{ route('user.struk', $trx->id) }}" class="btn btn-sm btn-outline-primary">
-                                📄 Lihat Struk
-                            </a>
+                        <a href="{{ route('user.struk', $trx->id) }}"
+                            class="btn btn-outline-primary d-flex align-items-center gap-1">
+                            📄 <span class="d-none d-sm-inline">Lihat Struk</span>
+                        </a>
                         @endif
                     </div>
+                    --}}
                 </div>
             </div>
+
         @empty
-            <div class="alert alert-info text-center text-dark" role="alert">
+            {{-- Status Kosong --}}
+            <div class="alert alert-info text-center fw-medium">
                 🚫 Belum ada transaksi yang tercatat.
             </div>
         @endforelse

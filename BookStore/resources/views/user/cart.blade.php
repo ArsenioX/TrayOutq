@@ -1,125 +1,139 @@
 @extends('layouts.user')
 
 @section('content')
-    <div class="container py-5">
-        <h1 class="text-white fw-bold mb-4">🛒 Keranjang Belanja</h1>
+<div class="container py-4">
+    <h1 class="mb-4 fw-bold fs-3">🛒 Keranjang Belanja</h1>
 
-        {{-- Notifikasi sukses / error --}}
-        @if (session('success'))
-            <script>
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: "{{ session('success') }}",
-                    icon: 'success',
-                    timer: 1800,
-                    showConfirmButton: false
-                });
-            </script>
-        @endif
-        @if (session('error'))
-            <script>
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: "{{ session('error') }}",
-                    icon: 'error'
-                });
-            </script>
-        @endif
+    {{-- ✅ Notifikasi SweetAlert2 --}}
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                timer: 1800,
+                showConfirmButton: false
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+                icon: 'error'
+            });
+        </script>
+    @endif
 
-        @if ($items->count())
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>📚 Produk</th>
-                                    <th class="text-center">Qty</th>
-                                    <th>💰 Harga</th>
-                                    <th>Subtotal</th>
-                                    <th class="text-center">🧹 Aksi</th>
-                                </tr>
-                            </thead>
+    @if ($items->count())
+        <div class="card shadow-sm">
+            <div class="card-body table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>📚 Produk</th>
+                            <th class="text-center">Qty</th>
+                            <th>💰 Harga</th>
+                            <th>Subtotal</th>
+                            <th class="text-center">🧹 Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalHarga = 0;
+                            $stokBermasalah = false;
+                        @endphp
 
-                            <tbody>
-                                @php
-                                    $totalHarga = 0;
-                                    $stokBermasalah = false;
-                                @endphp
+                        @foreach ($items as $item)
+                            @php
+                                $subtotal = $item->jumlah * $item->produk->harga;
+                                $totalHarga += $subtotal;
 
-                                @foreach ($items as $item)
-                                    @php
-                                        $subtotal = $item->jumlah * $item->produk->harga;
-                                        $totalHarga += $subtotal;
+                                if ($item->produk->stok < 1 || $item->produk->stok < $item->jumlah) {
+                                    $stokBermasalah = true;
+                                }
+                            @endphp
+                            <tr>
+                                {{-- Produk --}}
+                                <td>
+                                    <div>
+                                        <strong>{{ $item->produk->nama }}</strong><br>
+                                        <small class="text-muted">Stok: {{ $item->produk->stok }}</small><br>
+                                        @if ($item->produk->stok < 1)
+                                            <span class="text-danger fw-semibold">❌ Stok habis</span>
+                                        @elseif ($item->produk->stok < $item->jumlah)
+                                            <span class="text-warning fw-semibold">⚠️ Stok tidak cukup</span>
+                                        @endif
+                                    </div>
+                                </td>
 
-                                        if ($item->produk->stok < 1 || $item->produk->stok < $item->jumlah) {
-                                            $stokBermasalah = true;
-                                        }
-                                    @endphp
+                                {{-- Qty --}}
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <form action="{{ route('user.cart.decrease', $item->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-sm btn-secondary"
+                                                {{ $item->jumlah <= 1 ? 'disabled' : '' }}>-</button>
+                                        </form>
+                                        <span class="fw-semibold">{{ $item->jumlah }}</span>
+                                        <form action="{{ route('user.cart.increase', $item->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-sm btn-success"
+                                                {{ $item->jumlah >= $item->produk->stok ? 'disabled' : '' }}>+</button>
+                                        </form>
+                                    </div>
+                                </td>
 
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $item->produk->nama }}</strong><br>
-                                            <small class="text-muted">Stok: {{ $item->produk->stok }}</small>
+                                {{-- Harga & Subtotal --}}
+                                <td>Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
 
-                                            {{-- Peringatan stok --}}
-                                            @if ($item->produk->stok < 1)
-                                                <div class="text-danger fw-bold">❌ Stok habis</div>
-                                            @elseif ($item->produk->stok < $item->jumlah)
-                                                <div class="text-warning fw-bold">⚠️ Stok tidak cukup</div>
-                                            @endif
-                                        </td>
+                                {{-- Aksi --}}
+                                <td class="text-center">
+                                    <form method="POST" action="{{ route('user.cart.remove', $item->id) }}" class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn">
+                                            🗑️ Hapus
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
-                                        <td class="text-center">{{ $item->jumlah }}</td>
-                                        <td>Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</td>
-                                        <td>Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-                                        <td class="text-center">
-                                            {{-- Tombol hapus item dari keranjang --}}
-                                            <form method="POST" action="{{ route('user.cart.remove', $item->id) }}"
-                                                class="d-inline delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn">
-                                                    🗑️ Hapus
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                {{-- Total & Checkout --}}
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="fs-5">
+                        <strong>Total:</strong>
+                        <span class="fw-bold text-dark">Rp {{ number_format($totalHarga, 0, ',', '.') }}</span>
                     </div>
-
-                    {{-- Total & Checkout --}}
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="h5 mb-0">Total:
-                            <span class="fw-bold">Rp {{ number_format($totalHarga, 0, ',', '.') }}</span>
-                        </div>
-
-                        @if ($stokBermasalah)
-                            <button class="btn btn-secondary fw-bold shadow" disabled>
-                                🚫 Tidak bisa checkout (stok bermasalah)
-                            </button>
-                        @else
-                            <a href="{{ route('user.checkout.form') }}" class="btn btn-warning fw-bold shadow">
-                                ✅ Checkout Sekarang
-                            </a>
-                        @endif
-                    </div>
+                    @if ($stokBermasalah)
+                        <button class="btn btn-secondary" disabled>🚫 Tidak bisa checkout (stok bermasalah)</button>
+                    @else
+                        <a href="{{ route('user.checkout.form') }}" class="btn btn-warning fw-semibold">
+                            ✅ Checkout Sekarang
+                        </a>
+                    @endif
                 </div>
             </div>
-        @else
-            <div class="alert alert-info text-center text-dark mt-4" role="alert">
-                🧺 Keranjangmu masih kosong, yuk tambahkan buku!
-            </div>
-        @endif
-    </div>
+        </div>
+    @else
+        <div class="alert alert-info text-center mt-4 shadow-sm">
+            🧺 Keranjangmu masih kosong, yuk tambahkan buku!
+        </div>
+    @endif
+</div>
 
-    {{-- SweetAlert2 untuk konfirmasi hapus --}}
-    <script>
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const form = this.closest('form');
+{{-- ✅ Script konfirmasi hapus --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function confirmDelete(form) {
+            if (window.Swal) {
                 Swal.fire({
                     title: 'Hapus Produk?',
                     text: "Produk akan dihapus dari keranjang!",
@@ -134,7 +148,23 @@
                         form.submit();
                     }
                 });
-            });
+            } else {
+                if (confirm('Hapus produk dari keranjang?')) {
+                    form.submit();
+                }
+            }
+        }
+
+        document.body.addEventListener('click', function (e) {
+            const btn = e.target.closest('.delete-btn');
+            if (!btn) return;
+            e.preventDefault();
+
+            const form = btn.closest('form');
+            if (!form) return;
+
+            confirmDelete(form);
         });
-    </script>
+    });
+</script>
 @endsection

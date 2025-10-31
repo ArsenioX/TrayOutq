@@ -12,6 +12,7 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
+        /* ... (CSS .dashboard-title, .dashboard-subtitle, .dashboard-grid Anda tidak berubah) ... */
         .dashboard-title {
             font-size: 28px;
             font-weight: bold;
@@ -56,10 +57,23 @@
             color: #555;
         }
 
+        /* Ini adalah CSS @media (responsif) Anda yang lama */
         @media (max-width: 600px) {
             .dashboard-card {
                 flex: 1 1 100%;
             }
+
+            /* ▼▼▼ PERMINTAAN "RESPONSIF CHAT" DITAMBAHKAN DI SINI ▼▼▼ */
+            .chat-button {
+                /* Buat tombol lebih kecil & lebih mepet di HP */
+                width: 50px;
+                height: 50px;
+                right: 15px;
+                bottom: 15px;
+                font-size: 20px;
+            }
+
+            /* ▲▲▲ AKHIR CSS RESPONSIF ▲▲▲ */
         }
 
         .chat-button {
@@ -78,27 +92,44 @@
             font-size: 24px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 999;
-            transition: background 0.3s;
+            transition: background 0.3s, width 0.3s, height 0.3s;
+            /* <-- transisi ditambahkan */
+            position: relative;
         }
 
         .chat-button:hover {
             background-color: #0b5ed7;
         }
+
+        /* CSS Notifikasi (dari sebelumnya) */
+        .chat-notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 24px;
+            height: 24px;
+            padding: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: #d33;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
     </style>
 
+    {{-- Ini adalah HTML container asli Anda --}}
     <div class="dashboard-container">
         <h1 class="dashboard-title">Welcome, Admin</h1>
         <p class="dashboard-subtitle">
             This is your professional dashboard. Manage users, view reports, and control the system.
         </p>
 
+        {{-- Ini adalah HTML grid asli Anda --}}
         <div class="dashboard-grid">
-            {{-- System Logs --}}
-            <div class="dashboard-card">
-                <h2>System Logs</h2>
-                <p>Review activity and system alerts.</p>
-            </div>
-
             {{-- Product Management --}}
             <a href="{{ route('admin.produk.index') }}" class="dashboard-card">
                 <h2>Product Management</h2>
@@ -134,16 +165,54 @@
                 </p>
             </a>
 
-            {{-- About Us --}}
-            <a href="{{ route('admin.about') }}" class="dashboard-card">
-                <h2>About Us</h2>
-                <p>Information about this BookStore application.</p>
+            {{-- About Us Management --}}
+            <a href="{{ route('admin.about.edit') }}" class="dashboard-card">
+                <h2>About Us Management</h2>
+                <p>Update the content of the 'About Us' page.</p>
             </a>
         </div>
     </div>
 
-    {{-- Floating Chat Button --}}
-    <a href="{{ route('admin.chat') }}" class="chat-button" title="Chat">
+    {{-- Tombol Chat (dari sebelumnya) --}}
+    <a href="{{ route('admin.chat') }}" class="chat-button" title="Chat" id="admin-chat-button">
         💬
+        <span id="chat-notification-badge" class="chat-notification-badge"></span>
     </a>
+
+    {{-- Script Notifikasi (dari sebelumnya) --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatBadge = document.getElementById('chat-notification-badge');
+            function fetchUnreadCount() {
+                fetch("{{ route('chat.unreadCount') }}", {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok. Status: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const count = data.unread_count;
+                        if (chatBadge && count > 0) { // Saya tambahkan cek 'if (chatBadge)'
+                            chatBadge.style.display = 'flex';
+                            chatBadge.textContent = count;
+                        } else if (chatBadge) {
+                            chatBadge.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching unread chat count:', error);
+                    });
+            }
+            fetchUnreadCount();
+            setInterval(fetchUnreadCount, 15000);
+        });
+    </script>
 @endsection

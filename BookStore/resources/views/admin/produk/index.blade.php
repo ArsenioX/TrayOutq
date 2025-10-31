@@ -49,13 +49,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($produks as $index => $produk)
+                        {{-- ▼▼▼ PERBAIKAN 1: Logika Penomoran (agar lanjut di hal. 2) ▼▼▼ --}}
+                        @forelse ($produks as $produk)
                             <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
+                                {{--
+                                Ini adalah formula pagination untuk nomor urut.
+                                ($produks->currentPage() - 1) * $produks->perPage() + $loop->iteration
+                                --}}
+                                <td class="text-center">
+                                    {{ ($produks->currentPage() - 1) * $produks->perPage() + $loop->iteration }}</td>
+                                {{-- ▲▲▲ AKHIR PERBAIKAN 1 ▲▲▲ --}}
+
                                 <td class="fw-semibold">{{ $produk->nama }}</td>
                                 <td>{{ $produk->kategori->nama ?? '-' }}</td>
-
-
                                 <td>Rp {{ number_format($produk->harga, 0, ',', '.') }}</td>
                                 <td>{{ $produk->stok }}</td>
                                 <td>
@@ -75,8 +81,10 @@
                                         class="d-inline-block">
                                         @csrf
                                         @method('DELETE')
+
+                                        {{-- Kode tombol hapus Anda (onclick) sudah benar --}}
                                         <button type="button" class="btn btn-danger btn-sm"
-                                            onclick="confirmDelete({{ $produk->id }})">
+                                            onclick="confirmDelete({{ $produk->id }}, {{ $produk->stok }})">
                                             🗑️ Hapus
                                         </button>
                                     </form>
@@ -84,33 +92,51 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                {{-- Saya juga perbaiki colspan dari 6 menjadi 7 agar pas --}}
+                                <td colspan="7" class="text-center py-4 text-muted">
                                     Belum ada Buku ditambahkan.
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div>
+            </div> {{-- <-- Penutup card-body p-0 --}} </div> {{-- <-- Penutup card shadow-sm --}} {{-- ▼▼▼ KODE PAGINATION
+                    YANG DITAMBAHKAN ▼▼▼ --}} <div class="d-flex justify-content-center mt-4">
+                    {{ $produks->links() }}
         </div>
-    </div>
+        {{-- ▲▲▲ AKHIR KODE PAGINATION ▲▲▲ --}}
 
-    <script>
-        function confirmDelete(id) {
-            Swal.fire({
-                title: 'Yakin ingin menghapus?',
-                text: "Data produk akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + id).submit();
-                }
-            })
+    </div> {{-- <-- Penutup container py-5 --}} {{-- ▼▼▼ PERBAIKAN 2: Script dipindahkan ke SINI (sebelum @endsection) ▼▼▼
+        --}} {{-- Ini adalah perbaikan untuk error "Cannot end a section" --}} <script>
+        // Tambahkan parameter 'stok' di sini
+        function confirmDelete(id, stok) {
+
+        // Pengecekan 'if' di sini (kode Anda sudah benar)
+        if (stok > 0) {
+        // Jika stok LEBIH DARI 0, tampilkan pesan error
+        Swal.fire({
+        title: 'Gagal Menghapus!',
+        text: 'Produk tidak dapat dihapus karena stok masih tersedia (Stok saat ini: ' + stok + ').',
+        icon: 'error',
+        confirmButtonText: 'Mengerti'
+        });
+        } else {
+        // Jika stok 0, baru tampilkan konfirmasi penghapusan
+        Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Data produk ini (stok 0) akan dihapus permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+        }).then((result) => {
+        if (result.isConfirmed) {
+        document.getElementById('delete-form-' + id).submit();
         }
-    </script>
-@endsection
+        })
+        }
+        }
+        </script>
+@endsection {{-- <-- @endsection sekarang ada di PALING BAWAH --}}

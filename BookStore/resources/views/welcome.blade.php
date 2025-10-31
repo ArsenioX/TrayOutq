@@ -143,7 +143,7 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                        <a href="{{ url('/shop') }}" 
+                        <a href="{{ route('register') }}" 
                            class="group inline-flex items-center justify-center bg-gradient-to-r from-kemendikbud-primary to-kemendikbud-secondary hover:from-kemendikbud-dark hover:to-kemendikbud-primary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl">
                             <svg class="w-5 h-5 mr-2 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -393,8 +393,19 @@
                         </div>
                     </div>
 
-                    <!-- Popular Book 5 -->
-                    <div class="group cursor-pointer">
-                        <div class="bg-gradient-to-br from-orange-500 to-red-600 h-48 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center transform group-hover:scale-105">
-                            <div class="text-center text-white p-4">
-                                <div class="text-sm font-
+                <!-- Popular Book 4 -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-gradient-to-br from-purple-500 to-violet-600 h-48 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center transform group-hover:scale-105">
+                        <div class="text-center text-white p-4">
+                            <div class="text-sm font-bold mb-2">Bung Karno</div>
+                            <div class="text-xs opacity-80">Cindy Adams</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <div class="flex justify-center mb-1">
+                            <span class="text-yellow-400">★★★★★</span>
+                        </div>
+                        <div class="text-sm text-gray-600">4.7 • 3.1K pembaca</div>
+                    </div>
+                </div>

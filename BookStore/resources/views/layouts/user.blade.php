@@ -4,84 +4,91 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<title>BookStore - User</title>
+    <title>BookStore - User</title>
 
+    <link href="https://fonts.bunny.net/css?family=Nunito:400,600,700&display=swap" rel="stylesheet">
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
-            padding-top: 70px;
+            font-family: 'Nunito', sans-serif;
+            background-color: #f5f5f5;
+            color: #212529;
         }
 
-        .navbar {
-            background-color: #000 !important;
+        .navbar-brand:hover {
+            color: #6366f1 !important;
         }
 
-        .navbar .nav-link,
-        .navbar .navbar-brand,
-        .navbar .dropdown-toggle {
-            color: #fff !important;
+        .dropdown-menu.show {
+            display: block;
         }
 
-        .navbar-toggler-icon-custom {
-            cursor: pointer;
-            width: 25px;
-            height: 20px;
-            display: inline-block;
-            position: relative;
+        /* ▼▼▼ CSS BARU UNTUK TOMBOL CHAT & NOTIFIKASI ▼▼▼ */
+        .user-chat-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background-color: #0d6efd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
         }
 
-        .navbar-toggler-icon-custom span {
-            background: white;
+        .user-chat-button:hover {
+            background-color: #0b5ed7;
+            color: white;
+        }
+
+        .chat-notification-badge {
             position: absolute;
-            height: 3px;
-            width: 100%;
-            left: 0;
-            transition: 0.3s;
-            border-radius: 2px;
+            top: -5px;
+            right: -5px;
+            min-width: 24px;
+            height: 24px;
+            padding: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: #d33;
+            /* Merah */
+            border-radius: 50%;
+            display: none;
+            /* Sembunyi secara default */
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
         }
 
-        .navbar-toggler-icon-custom span:nth-child(1) {
-            top: 0;
-        }
-
-        .navbar-toggler-icon-custom span:nth-child(2) {
-            top: 8px;
-        }
-
-        .navbar-toggler-icon-custom span:nth-child(3) {
-            top: 16px;
-        }
+        /* ▲▲▲ AKHIR CSS BARU ▲▲▲ */
     </style>
 </head>
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top shadow-sm">
-            <div class="container d-flex justify-content-between align-items-center">
-                <!-- Brand -->
-                <a class="navbar-brand fw-bold" href="{{ url('/user/dashboard') }}">
-                    {{ Auth::user()->name }}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+            {{-- ... (Isi Navbar Anda tidak berubah) ... --}}
+            <div class="container d-flex justify-content-between align-items-center py-2">
+                <a href="{{ url('/user/dashboard') }}" class="navbar-brand fw-bold">
+                    BookStore {{ Auth::user()->name }}
                 </a>
-
-                <!-- Tombol kanan -->
                 <div class="d-flex align-items-center gap-3">
-
-                    <!-- Cart -->
                     <a href="{{ route('cart.index') }}" class="btn btn-outline-light position-relative">
                         🛒
                         @php
-$cartCount = \App\Models\Cart::where('user_id', Auth::id())->count();
+                            $cartCount = \App\Models\Cart::where('user_id', Auth::id())->count();
                         @endphp
                         @if ($cartCount > 0)
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -89,21 +96,15 @@ $cartCount = \App\Models\Cart::where('user_id', Auth::id())->count();
                             </span>
                         @endif
                     </a>
-
-                    <!-- Riwayat Transaksi -->
-                    <a href="{{ route('user.transactions') }}" class="btn btn-primary">
+                    <a href="{{ route('user.transactions') }}" class="btn btn-primary fw-semibold">
                         📦 Riwayat Transaksi
                     </a>
-
-                    <!-- Dropdown Menu -->
                     <div class="dropdown">
-                        <a class="nav-link dropdown-toggle navbar-toggler-icon-custom" href="#" id="dropdownMenuButton"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                        <button id="dropdownButton" class="btn btn-outline-light dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            ☰
+                        </button>
+                        <ul id="dropdownMenu" class="dropdown-menu dropdown-menu-end mt-2">
                             <li>
                                 <a class="dropdown-item" href="{{ route('user.about') }}">About Us</a>
                             </li>
@@ -115,8 +116,6 @@ $cartCount = \App\Models\Cart::where('user_id', Auth::id())->count();
                             </li>
                         </ul>
                     </div>
-
-                    <!-- Logout Form -->
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
@@ -124,10 +123,69 @@ $cartCount = \App\Models\Cart::where('user_id', Auth::id())->count();
             </div>
         </nav>
 
-        <main class="container py-4">
+        <main class="container pt-5 mt-5 mb-4">
             @yield('content')
         </main>
-    </div>
+
+        {{-- ▼▼▼ HTML UNTUK TOMBOL CHAT DITEMPEL DI SINI ▼▼▼ --}}
+        <a href="{{ route('user.chat') }}" class="user-chat-button" title="Chat Admin" id="user-chat-button">
+            💬
+            {{-- Tempat untuk angka notifikasi --}}
+            <span id="chat-notification-badge" class="chat-notification-badge"></span>
+        </a>
+        {{-- ▲▲▲ AKHIR HTML TOMBOL CHAT ▲▲▲ --}}
+
+    </div> {{-- <-- Penutup div #app --}} <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        {{-- ▼▼▼ SCRIPT BARU UNTUK NOTIFIKASI DITAMBAHKAN DI SINI ▼▼▼ --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Ambil elemen badge notifikasi
+                const chatBadge = document.getElementById('chat-notification-badge');
+
+                // Buat fungsi untuk mengecek pesan baru
+                function fetchUnreadCount() {
+                    // Pastikan route 'chat.unreadCount' sudah ada di web.php
+                    fetch("{{ route('chat.unreadCount') }}", {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok. Status: ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const count = data.unread_count;
+                            if (chatBadge) { // Cek jika elemennya ada
+                                if (count > 0) {
+                                    chatBadge.style.display = 'flex';
+                                    chatBadge.textContent = count;
+                                } else {
+                                    chatBadge.style.display = 'none';
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching unread chat count:', error);
+                        });
+                }
+
+                // 1. Jalankan fungsi ini 1x saat halaman pertama kali dimuat
+                fetchUnreadCount();
+                // 2. Jalankan fungsi ini lagi setiap 15 detik
+                setInterval(fetchUnreadCount, 15000);
+            });
+        </script>
+        {{-- ▲▲▲ AKHIR SCRIPT BARU ▲▲▲ --}}
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

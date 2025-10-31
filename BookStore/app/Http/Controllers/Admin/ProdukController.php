@@ -10,20 +10,26 @@ use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware(function ($request, $next) {
-    //         (new \App\Http\Middleware\RoleMiddleware)->handle($request, function () {}, 'admin');
-    //         return $next($request);
-    //     });
-    // }
+    // ... (Fungsi __construct() Anda yang di-comment) ...
 
+    /**
+     * [FUNGSI YANG DIPERBARUI]
+     * Menampilkan daftar produk dengan pagination
+     */
     public function index()
     {
-        $produks = Produk::with('kategori')->get();
+        // ▼▼▼ INI DIA PERUBAHANNYA ▼▼▼
+        // Kita ganti ->get() menjadi ->paginate(10)
+        // Saya juga tambahkan 'latest()' agar produk terbaru ada di paling atas tabel
+        $produks = Produk::with('kategori')->latest()->paginate(6); // <-- 10 produk per halaman
+        // ▲▲▲ AKHIR PERUBAHAN ▲▲▲
+
         return view('admin.produk.index', compact('produks'));
     }
 
+    /**
+     * Fungsi di bawah ini TIDAK SAYA UBAH
+     */
     public function create()
     {
         $kategoris = Kategori::all();
@@ -55,6 +61,7 @@ class ProdukController extends Controller
         $kategoris = Kategori::all();
         return view('admin.produk.edit', compact('produk', 'kategoris'));
     }
+
     public function update(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
@@ -88,7 +95,6 @@ class ProdukController extends Controller
 
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil diupdate!');
     }
-
 
     public function destroy(Produk $produk)
     {

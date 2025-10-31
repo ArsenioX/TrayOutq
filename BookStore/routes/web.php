@@ -16,6 +16,10 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\PDFController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\User\UserAboutController;
+use App\Http\Controllers\Admin\AboutUsController;
+
+
 
 // ⬇ Default Landing Page
 Route::get('/', function () {
@@ -50,28 +54,24 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::post('/transactions/konfirmasi/{id}', [AdminTransactionController::class, 'konfirmasi'])->name('transactions.konfirmasi');
 
-    // Admin Chat
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+    // Rute untuk menampilkan form edit
+    Route::get('/about-us', [AboutUsController::class, 'edit'])->name('about.edit');
 
-    //admin about
-    Route::get('/about', function () {
-        return view('admin.about'); // <- khusus admin
-    })->name('about');
+    // Rute untuk menyimpan (update) data
+    Route::put('/about-us', [AboutUsController::class, 'update'])->name('about.update');
+
 });
 
 // ⬇ User Routes
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-    //user about
-    Route::get('/about', function () {
-        return view('shared.about');
-    })->name('about');
-
-    // Cart
+    Route::get('/about-us', [UserAboutController::class, 'index'])->name('about');
+    Route::get('/product/{id}', [UserDashboardController::class, 'showProduct'])->name('product.show');
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::put('/cart/increase/{id}', [CartController::class, 'increase'])->name('cart.increase');
+    Route::put('/cart/decrease/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
 
     // Checkout & Transactions
     Route::get('/checkout', [TransactionController::class, 'checkoutForm'])->name('checkout.form');
@@ -81,8 +81,7 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::get('/struk/{id}', [PDFController::class, 'cetakStruk'])->name('struk');
 
     // Chat ke Admin
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+ 
 });
 
 // ⬇ Fallback Chat Routes (jika tidak pakai prefix)
@@ -91,9 +90,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat', [ChatController::class, 'store'])->name('user.chat.store');
     Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat');
     Route::post('/admin/chat', [ChatController::class, 'store'])->name('admin.chat.store');
+
+    Route::get('/chat/unread-count', [ChatController::class, 'getUnreadCount'])->name('chat.unreadCount');
 });
 
 // ⬇ Optional: Cart routes outside user prefix (redundan, bisa dihapus jika sudah di atas)
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+
