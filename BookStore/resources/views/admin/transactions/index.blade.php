@@ -55,6 +55,7 @@
                 <h2 class="fw-bold fs-2 text-dark mb-0">{{ __('Transaction Management') }}</h2>
                 <p class="text-muted">{{ __('Monitor and manage all user transactions') }}</p>
             </div>
+            @if (config('features.show_transaction_stats'))
             <div class="col-md-7">
                 <div class="row g-3">
                     <div class="col">
@@ -96,6 +97,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- 4. FILTER: Tab dan Search Bar --}}
         <form action="{{ route('admin.transactions.index') }}" method="GET" id="filterForm">
@@ -116,12 +118,14 @@
                                 onclick="submitFilter('selesai');">{{ __('Selesai') }}</a></li>
                     </ul>
                 </div>
+                @if (config('features.show_transaction_search'))
                 <div class="input-group" style="max-width: 300px;">
                     {{-- DITERJEMAHKAN --}}
                     <input type="text" class="form-control" name="search" placeholder="{{ __('Search transactions...') }}"
                         value="{{ $search ?? '' }}">
                     <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
                 </div>
+                @endif
             </div>
         </form>
 

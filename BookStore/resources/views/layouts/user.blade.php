@@ -256,13 +256,16 @@
                     </a>
 
                     {{-- Tombol Dark Mode --}}
+                    @if (config('features.show_user_darkmode'))
                     <button id="theme-toggle-button" class="btn btn-outline-light" type="button"
                         title="Toggle dark mode">
                         <span id="theme-icon-sun">☀️</span>
                         <span id="theme-icon-moon" style="display: none;">🌙</span>
                     </button>
+                    @endif
 
                     {{-- Dropdown Bahasa --}}
+                    @if (config('features.show_user_translator'))
                     <div class="dropdown">
                         <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
@@ -285,6 +288,7 @@
                             </li>
                         </ul>
                     </div>
+                    @endif
 
                     {{-- Dropdown Menu --}}
                     <div class="dropdown">
@@ -296,10 +300,12 @@
                             <li>
                                 <a class="dropdown-item" href="{{ route('user.about') }}">{{ __('About Us') }}</a>
                             </li>
+                            @if (config('features.show_user_wishlist'))
                             <li>
                                 <a class="dropdown-item" href="{{ route('user.wishlist.index') }}">❤️
                                     {{ __('My Wishlist') }}</a>
                             </li>
+                            @endif
                             <li>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

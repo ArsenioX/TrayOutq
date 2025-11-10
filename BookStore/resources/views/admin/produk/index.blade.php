@@ -112,35 +112,33 @@
 
     </div>
 
-    <script>
-        function confirmDelete(id, stok) {
-
-            if (stok > 0) {
-                Swal.fire({
-                        {{-- DITERJEMAHKAN--}
-        }
-        title: '{{ __('Gagal Menghapus!') }}',
-            text: '{{ __('Produk tidak dapat dihapus karena stok masih tersedia (Stok saat ini: ') }}' + stok + ').',
-                icon: 'error',
-                    confirmButtonText: '{{ __('Mengerti') }}'
-                    });
-                } else {
+   <script>
+    function confirmDelete(id, stok) {
+        // Jika stok LEBIH dari 0, TIDAK BISA dihapus
+        if (stok > 0) {
             Swal.fire({
-                        {{-- DITERJEMAHKAN--}}
-        title: '{{ __('Yakin ingin menghapus?') }}',
-            text: "{{ __('Data produk ini (stok 0) akan dihapus permanen!') }}",
+                title: 'Gagal Menghapus!',
+                text: 'Produk tidak dapat dihapus karena stok masih tersedia (Stok saat ini: ' + stok + ').',
+                icon: 'error',
+                confirmButtonText: 'Mengerti'
+            });
+        } 
+        // Jika stok = 0, BISA dihapus dengan konfirmasi
+        else {
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data produk ini (stok 0) akan dihapus permanen!",
                 icon: 'warning',
-                    showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                                confirmButtonText: '{{ __('Ya, hapus!') }}',
-                                    cancelButtonText: '{{ __('Batal') }}'
-                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            document.getElementById('delete-form-' + id).submit();
-                                        }
-                                    })
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
                 }
-            }
-    </script>
-@endsection
+            });
+        }
+    }
+</script>

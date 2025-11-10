@@ -105,14 +105,14 @@
                             // Buka
                             content.style.maxHeight = 'none';
                             fade.style.display = 'none';
-                            { { --DITERJEMAHKAN --} }
+                            // { { --DITERJEMAHKAN --} }
                             toggleButton.innerText = '{{ __('Read less...') }}';
                             isExpanded = true;
                         } else {
                             // Tutup
                             content.style.maxHeight = collapsedHeight;
                             fade.style.display = 'block';
-                            { { --DITERJEMAHKAN --} }
+                            // { { --DITERJEMAHKAN --} }
                             toggleButton.innerText = '{{ __('Read more...') }}';
                             isExpanded = false;
                         }

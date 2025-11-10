@@ -395,6 +395,7 @@
                 </div>
 
                 {{-- Category Select --}}
+                 @if (config('features.show_user_kategori_filter_dropdown'))
                 <select name="kategori" class="form-select" style="min-width: 200px;">
                     <option value="">{{ __('All Categories') }}</option>
                     @foreach ($kategori as $kat)
@@ -403,8 +404,10 @@
                         </option>
                     @endforeach
                 </select>
+                @endif 
 
                 {{-- Filter Dropdown --}}
+                @if (config('features.show_user_advanced_filter_dropdown'))
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" 
                             id="filterHargaDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" 
@@ -436,6 +439,7 @@
                                        value="terlaris" {{ request('sort_harga') == 'terlaris' ? 'checked' : '' }}>
                                 <label class="form-check-label" for="terlaris">{{ __('Best Selling') }}</label>
                             </div>
+                            
 
                             {{-- Wishlist Only --}}
                             <div class="mb-3 border-top pt-3">
@@ -493,6 +497,7 @@
                         </a>
                     </div>
                 </div>
+                @endif
 
                 <button type="submit" class="btn btn-primary">{{ __('Filter') }}</button>
             </form>
@@ -512,13 +517,16 @@
                             </a>
 
                             {{-- Wishlist Button --}}
+                            @if (config('features.show_user_wishlist'))
                             <form action="{{ route('user.wishlist.toggle', $item->id) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="wishlist-badge" title="{{ __('Add to Wishlist') }}">
                                     ❤️
                                 </button>
                             </form>
+                            @endif
                         </div>
+                       
 
                         {{-- Product Body --}}
                         <div class="product-body">
@@ -529,6 +537,7 @@
                             <div class="product-price">Rp {{ number_format($item->harga, 0, ',', '.') }}</div>
 
                             {{-- Rating --}}
+                            @if (config('features.show_user_rating_system'))
                             <div class="product-rating">
                                 @php $rating = round($item->reviews_avg_rating ?? 0); @endphp
                                 <div class="star-rating-display-small">
@@ -538,6 +547,7 @@
                                 </div>
                                 <span class="text-muted small">({{ $item->reviews_count ?? 0 }})</span>
                             </div>
+                            @endif
 
                             {{-- Stock --}}
                             <div class="stock-badge {{ $item->stok > 0 ? 'stock-available' : 'stock-out' }}">
@@ -551,6 +561,7 @@
                             </div>
 
                             {{-- Latest Review --}}
+                            @if (config('features.show_user_rating_system'))
                             @if ($item->latestReview)
                                 <div class="product-review">
                                     <div class="d-flex align-items-center mb-2">
@@ -569,6 +580,7 @@
                                         </a>
                                     @endif
                                 </div>
+                            @endif
                             @endif
 
                             {{-- Actions --}}

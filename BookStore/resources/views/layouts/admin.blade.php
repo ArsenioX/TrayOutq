@@ -214,36 +214,44 @@
 
                 <div class="d-flex align-items-center gap-3">
 
-                    {{-- Tombol Dark Mode --}}
+           @if (config('features.show_darkmode'))
+                    
+                    {{-- Tombol Dark Mode (CHALLENGE) --}}
                     <button id="theme-toggle-button" class="btn btn-outline-light" type="button"
                         title="Toggle dark mode">
                         <span id="theme-icon-sun">☀️</span>
                         <span id="theme-icon-moon" style="display: none;">🌙</span>
                     </button>
 
-                    {{-- Dropdown Bahasa --}}
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            @if (App::getLocale() == 'id')
-                                🇮🇩 ID
-                            @else
-                                🇬🇧 EN
-                            @endif
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end mt-2">
-                            <li>
-                                <a class="dropdown-item" href="{{ route('lang.switch', 'id') }}">
-                                    🇮🇩 Bahasa Indonesia
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('lang.switch', 'en') }}">
-                                    🇬🇧 English
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                @endif
+
+                {{-- Dropdown Bahasa (CHALLENGE) --}}
+            @if (config('features.show_translator'))
+
+                {{-- Dropdown Bahasa (CHALLENGE) --}}
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @if (App::getLocale() == 'id')
+                            🇮🇩 ID
+                        @else
+                            🇬🇧 EN
+                        @endif
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('lang.switch', 'id') }}">
+                                🇮🇩 Bahasa Indonesia
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('lang.switch', 'en') }}">
+                                🇬🇧 English
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            @endif
 
                     {{-- Menu Dropdown --}}
                     <div class="dropdown">
