@@ -13,7 +13,9 @@ class Transaction extends Model
         'metode_pembayaran',
         'total',
         'status',
+        'shipping_notes',  // Tambahkan kolom untuk catatan/resi
         'bukti_bayar'
+      
     ];
 
     public function user()

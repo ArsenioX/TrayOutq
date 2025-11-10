@@ -6,19 +6,24 @@
 
     <div class="container py-5">
         <div class="mb-4 p-4 rounded" style="background-color: #14532d;">
-            <h2 class="fw-bold text-white mb-2">🛒 Daftar Produk</h2>
-            <p class="text-white mb-0">Berikut adalah daftar produk yang tersedia. Anda dapat menambahkan, mengedit, atau
-                menghapus produk sesuai kebutuhan.</p>
+            {{-- DITERJEMAHKAN --}}
+            <h2 class="fw-bold text-white mb-2">🛒 {{ __('Daftar Produk') }}</h2>
+            {{-- DITERJEMAHKAN --}}
+            <p class="text-white mb-0">
+                {{ __('Berikut adalah daftar produk yang tersedia. Anda dapat menambahkan, mengedit, atau menghapus produk sesuai kebutuhan.') }}
+            </p>
         </div>
 
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <a href="{{ route('admin.dashboard') }}" class="btn fw-semibold"
                 style="background-color: #facc15; color: black;">
-                ← Kembali ke Dashboard
+                {{-- DITERJEMAHKAN --}}
+                {{ __('← Kembali ke Dashboard') }}
             </a>
 
             <a href="{{ route('admin.produk.create') }}" class="btn btn-success fw-semibold">
-                + Tambah Produk
+                {{-- DITERJEMAHKAN --}}
+                {{ __('+ Tambah Produk') }}
             </a>
         </div>
 
@@ -26,11 +31,12 @@
             <script>
                 Swal.fire({
                     icon: 'success',
-                    title: 'Sukses!',
-                    text: '{{ session('success') }}',
+                            {{-- DITERJEMAHKAN--}}
+                    title: '{{ __('Sukses!') }}',
+                    text: '{{ session('success') }}', {{-- Teks ini dari Controller--}}
                     showConfirmButton: false,
                     timer: 2000
-                });
+                        });
             </script>
         @endif
 
@@ -39,26 +45,22 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead style="background-color: #14532d; color: white;">
                         <tr>
-                            <th style="width: 5%;">No</th>
-                            <th>Nama Buku</th>
-                            <th>Kategori</th>
-                            <th>Harga</th>
-                            <th>Stok</th>
-                            <th style="width: 15%;">Gambar</th>
-                            <th style="width: 20%;">Aksi</th>
+                            {{-- DITERJEMAHKAN --}}
+                            <th style="width: 5%;">{{ __('No') }}</th>
+                            <th>{{ __('Nama Buku') }}</th>
+                            <th>{{ __('Kategori') }}</th>
+                            <th>{{ __('Harga') }}</th>
+                            <th>{{ __('Stok') }}</th>
+                            <th style="width: 15%;">{{ __('Gambar') }}</th>
+                            <th style="width: 20%;">{{ __('Aksi') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- ▼▼▼ PERBAIKAN 1: Logika Penomoran (agar lanjut di hal. 2) ▼▼▼ --}}
                         @forelse ($produks as $produk)
                             <tr>
-                                {{--
-                                Ini adalah formula pagination untuk nomor urut.
-                                ($produks->currentPage() - 1) * $produks->perPage() + $loop->iteration
-                                --}}
                                 <td class="text-center">
-                                    {{ ($produks->currentPage() - 1) * $produks->perPage() + $loop->iteration }}</td>
-                                {{-- ▲▲▲ AKHIR PERBAIKAN 1 ▲▲▲ --}}
+                                    {{ ($produks->currentPage() - 1) * $produks->perPage() + $loop->iteration }}
+                                </td>
 
                                 <td class="fw-semibold">{{ $produk->nama }}</td>
                                 <td>{{ $produk->kategori->nama ?? '-' }}</td>
@@ -69,12 +71,14 @@
                                         <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama }}"
                                             class="img-fluid rounded shadow-sm" width="100">
                                     @else
-                                        <span class="text-muted fst-italic">Tidak ada gambar</span>
+                                        {{-- DITERJEMAHKAN --}}
+                                        <span class="text-muted fst-italic">{{ __('Tidak ada gambar') }}</span>
                                     @endif
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.produk.edit', $produk->id) }}" class="btn btn-success btn-sm me-2">
-                                        ✏️ Edit
+                                        {{-- DITERJEMAHKAN --}}
+                                        ✏️ {{ __('Edit') }}
                                     </a>
                                     <form id="delete-form-{{ $produk->id }}"
                                         action="{{ route('admin.produk.destroy', $produk->id) }}" method="POST"
@@ -82,61 +86,61 @@
                                         @csrf
                                         @method('DELETE')
 
-                                        {{-- Kode tombol hapus Anda (onclick) sudah benar --}}
                                         <button type="button" class="btn btn-danger btn-sm"
                                             onclick="confirmDelete({{ $produk->id }}, {{ $produk->stok }})">
-                                            🗑️ Hapus
+                                            {{-- DITERJEMAHKAN --}}
+                                            🗑️ {{ __('Hapus') }}
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                {{-- Saya juga perbaiki colspan dari 6 menjadi 7 agar pas --}}
                                 <td colspan="7" class="text-center py-4 text-muted">
-                                    Belum ada Buku ditambahkan.
+                                    {{-- DITERJEMAHKAN --}}
+                                    {{ __('Belum ada Buku ditambahkan.') }}
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div> {{-- <-- Penutup card-body p-0 --}} </div> {{-- <-- Penutup card shadow-sm --}} {{-- ▼▼▼ KODE PAGINATION
-                    YANG DITAMBAHKAN ▼▼▼ --}} <div class="d-flex justify-content-center mt-4">
-                    {{ $produks->links() }}
+            </div>
         </div>
-        {{-- ▲▲▲ AKHIR KODE PAGINATION ▲▲▲ --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $produks->links() }}
+        </div>
 
-    </div> {{-- <-- Penutup container py-5 --}} {{-- ▼▼▼ PERBAIKAN 2: Script dipindahkan ke SINI (sebelum @endsection) ▼▼▼
-        --}} {{-- Ini adalah perbaikan untuk error "Cannot end a section" --}} <script>
-        // Tambahkan parameter 'stok' di sini
+    </div>
+
+    <script>
         function confirmDelete(id, stok) {
 
-        // Pengecekan 'if' di sini (kode Anda sudah benar)
-        if (stok > 0) {
-        // Jika stok LEBIH DARI 0, tampilkan pesan error
-        Swal.fire({
-        title: 'Gagal Menghapus!',
-        text: 'Produk tidak dapat dihapus karena stok masih tersedia (Stok saat ini: ' + stok + ').',
-        icon: 'error',
-        confirmButtonText: 'Mengerti'
-        });
-        } else {
-        // Jika stok 0, baru tampilkan konfirmasi penghapusan
-        Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: "Data produk ini (stok 0) akan dihapus permanen!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal'
-        }).then((result) => {
-        if (result.isConfirmed) {
-        document.getElementById('delete-form-' + id).submit();
+            if (stok > 0) {
+                Swal.fire({
+                        {{-- DITERJEMAHKAN--}
         }
-        })
-        }
-        }
-        </script>
-@endsection {{-- <-- @endsection sekarang ada di PALING BAWAH --}}
+        title: '{{ __('Gagal Menghapus!') }}',
+            text: '{{ __('Produk tidak dapat dihapus karena stok masih tersedia (Stok saat ini: ') }}' + stok + ').',
+                icon: 'error',
+                    confirmButtonText: '{{ __('Mengerti') }}'
+                    });
+                } else {
+            Swal.fire({
+                        {{-- DITERJEMAHKAN--}}
+        title: '{{ __('Yakin ingin menghapus?') }}',
+            text: "{{ __('Data produk ini (stok 0) akan dihapus permanen!') }}",
+                icon: 'warning',
+                    showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                                confirmButtonText: '{{ __('Ya, hapus!') }}',
+                                    cancelButtonText: '{{ __('Batal') }}'
+                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            document.getElementById('delete-form-' + id).submit();
+                                        }
+                                    })
+                }
+            }
+    </script>
+@endsection

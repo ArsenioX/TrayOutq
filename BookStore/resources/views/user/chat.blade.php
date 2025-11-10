@@ -3,20 +3,21 @@
 @section('content')
 <div class="container my-5">
     <div class="card shadow-lg">
-        <!-- Header -->
         <div class="card-header bg-success text-white">
-            <h5 class="mb-0">💬 Chat dengan Admin</h5>
+            {{-- DITERJEMAHKAN --}}
+            <h5 class="mb-0">💬 {{ __('Chat dengan Admin') }}</h5>
         </div>
 
-        <!-- Chat Box -->
         <div id="chatBox" class="card-body bg-light overflow-auto" style="height: 400px;">
             @forelse ($messages as $msg)
                 @php
                     $date = $msg->created_at->timezone('Asia/Jakarta');
                     if ($date->isToday()) {
-                        $timeLabel = 'Hari ini ' . $date->format('H:i');
+                        // DITERJEMAHKAN
+                        $timeLabel = __('Hari ini') . ' ' . $date->format('H:i');
                     } elseif ($date->isYesterday()) {
-                        $timeLabel = 'Kemarin ' . $date->format('H:i');
+                        // DITERJEMAHKAN
+                        $timeLabel = __('Kemarin') . ' ' . $date->format('H:i');
                     } else {
                         $timeLabel = $date->format('d M Y H:i');
                     }
@@ -29,23 +30,25 @@
                     </div>
                 </div>
             @empty
-                <p class="text-muted text-center mb-0">Belum ada pesan.</p>
+                {{-- DITERJEMAHKAN --}}
+                <p class="text-muted text-center mb-0">{{ __('Belum ada pesan.') }}</p>
             @endforelse
         </div>
 
-        <!-- Input Form -->
         <div class="card-footer bg-white">
             <form action="{{ route('user.chat.store') }}" method="POST" class="d-flex gap-2">
                 @csrf
                 <input type="hidden" name="receiver_id" value="{{ \App\Models\User::where('role', 'admin')->first()->id }}">
-                <input type="text" name="message" class="form-control" placeholder="Ketik pesan..." required>
-                <button type="submit" class="btn btn-success">Kirim</button>
+                {{-- DITERJEMAHKAN --}}
+                <input type="text" name="message" class="form-control" placeholder="{{ __('Ketik pesan...') }}" required>
+                {{-- DITERJEMAHKAN --}}
+                <button type="submit" class="btn btn-success">{{ __('Kirim') }}</button>
             </form>
         </div>
     </div>
 </div>
 
-{{-- Auto Scroll --}}
+{{-- Auto Scroll (Tidak diubah) --}}
 <script>
     const chatBox = document.getElementById('chatBox');
     if (chatBox) {

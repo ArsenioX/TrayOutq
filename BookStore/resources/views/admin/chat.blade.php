@@ -7,7 +7,8 @@
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">User</h5>
+                    {{-- DITERJEMAHKAN --}}
+                    <h5 class="mb-0">{{ __('User') }}</h5>
                 </div>
                 <ul class="list-group list-group-flush">
                     @foreach ($users as $u)
@@ -27,7 +28,8 @@
             <div class="card shadow-sm">
                 @if ($selectedUser)
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Chat dengan {{ $selectedUser->name }}</h5>
+                        {{-- DITERJEMAHKAN --}}
+                        <h5 class="mb-0">{{ __('Chat dengan') }} {{ $selectedUser->name }}</h5>
                     </div>
 
                     <div class="card-body" style="height: 450px; overflow-y: auto;">
@@ -35,9 +37,11 @@
                             @php
                                 $date = $msg->created_at->timezone('Asia/Jakarta');
                                 if ($date->isToday()) {
-                                    $timeLabel = 'Hari ini ' . $date->format('H:i');
+                                    // DITERJEMAHKAN (Kunci sudah ada)
+                                    $timeLabel = __('Hari ini') . ' ' . $date->format('H:i');
                                 } elseif ($date->isYesterday()) {
-                                    $timeLabel = 'Kemarin ' . $date->format('H:i');
+                                    // DITERJEMAHKAN (Kunci sudah ada)
+                                    $timeLabel = __('Kemarin') . ' ' . $date->format('H:i');
                                 } else {
                                     $timeLabel = $date->format('d M Y H:i');
                                 }
@@ -50,7 +54,8 @@
                                 </div>
                             </div>
                         @empty
-                            <p class="text-muted text-center">Belum ada pesan.</p>
+                            {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                            <p class="text-muted text-center">{{ __('Belum ada pesan.') }}</p>
                         @endforelse
                     </div>
 
@@ -58,13 +63,16 @@
                         <form action="{{ route('user.chat.store') }}" method="POST" class="d-flex">
                             @csrf
                             <input type="hidden" name="receiver_id" value="{{ $selectedUser->id }}">
-                            <input type="text" name="message" class="form-control me-2" placeholder="Ketik pesan...">
-                            <button type="submit" class="btn btn-success">Kirim</button>
+                            {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                            <input type="text" name="message" class="form-control me-2" placeholder="{{ __('Ketik pesan...') }}">
+                            {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                            <button type="submit" class="btn btn-success">{{ __('Kirim') }}</button>
                         </form>
                     </div>
                 @else
                     <div class="card-body text-center text-muted">
-                        Pilih user untuk memulai percakapan.
+                        {{-- DITERJEMAHKAN --}}
+                        {{ __('Pilih user untuk memulai percakapan.') }}
                     </div>
                 @endif
             </div>

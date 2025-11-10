@@ -13,28 +13,22 @@ use App\Models\Produk;
 class AdminTransactionController extends Controller
 {
     /**
-     * Menampilkan daftar semua transaksi kepada admin.
+     * Fungsi index() Anda
+     * (Saya perbarui statusnya agar cocok)
      */
-    // app/Http/Controllers/Admin/AdminTransactionController.php
-
-    public function index(Request $request) // Tambahkan "Request $request"
+    public function index(Request $request)
     {
-        // Cek apakah user adalah admin
         if (!Auth::check() || Auth::user()->role !== 'admin') {
             abort(403, 'Akses hanya untuk admin.');
         }
 
-        // Ambil input dari form (jika ada)
         $search = $request->input('search');
         $status = $request->input('status');
 
-        // Mulai query builder untuk User
         $query = User::query()
             ->with([
-                // Muat relasi transaksi
                 'transactions' => function ($trxQuery) use ($status) {
                     $trxQuery->latest();
-                    // Jika ada filter status, filter juga transaksi yang dimuat
                     if ($status) {
                         $trxQuery->where('status', $status);
                     }
@@ -44,71 +38,73 @@ class AdminTransactionController extends Controller
             ])
             ->orderBy('name', 'asc');
 
-        // --- LOGIKA FILTER ---
-
-        // 1. Filter berdasarkan Status
         if ($status) {
-            // Hanya tampilkan user yang MEMILIKI transaksi dengan status tsb
             $query->whereHas('transactions', function ($q) use ($status) {
                 $q->where('status', $status);
             });
         } else {
-            // Default: Hanya tampilkan user yang punya transaksi
             $query->whereHas('transactions');
         }
 
-        // 2. Filter berdasarkan Search
         if ($search) {
+            // ... (logika search Anda tidak berubah) ...
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%") // Cari berdasarkan nama user
-                    ->orWhere('email', 'LIKE', "%{$search}%") // Cari berdasarkan email user
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%")
                     ->orWhereHas('transactions', function ($trxQuery) use ($search) {
-                        $trxId = ltrim($search, '#'); // Hapus # jika user mengetik #20
-                        $trxQuery->where('id', 'LIKE', "%{$trxId}%") // Cari berdasarkan ID transaksi
-                            ->orWhere('total', 'LIKE', "%{$search}%"); // Cari berdasarkan total
+                        $trxId = ltrim($search, '#');
+                        $trxQuery->where('id', 'LIKE', "%{$trxId}%")
+                            ->orWhere('total', 'LIKE', "%{$search}%");
                     });
             });
         }
 
-        // Eksekusi query
         $users = $query->get();
 
-        // --- STATS HEADER (Tetap sama) ---
+        // --- STATS HEADER (Saya sesuaikan dengan status baru) ---
         $pendingCount = Transaction::where('status', 'pending')->count();
+        $processingCount = Transaction::where('status', 'diproses')->count(); // <-- BARU
         $shippedCount = Transaction::where('status', 'dikirim')->count();
-        $completedCount = Transaction::where('status', 'selesai')->count();
+        $completedCount = Transaction::where('status', 'selesai')->count(); // <-- BARU
 
-        // Kirim semua data ke view, TERMASUK $search dan $status
         return view('admin.transactions.index', compact(
             'users',
             'pendingCount',
+            'processingCount', // <-- BARU
             'shippedCount',
             'completedCount',
-            'search', // Kirim balik value search
-            'status'  // Kirim balik value status
+            'search',
+            'status'
         ));
     }
+
+
     /**
-     * Mengonfirmasi transaksi dan mengubah status menjadi 'dikirim'.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
+     * [FUNGSI DIPERBARUI]
+     * Memperbarui status dan catatan pengiriman (versi Bahasa Indonesia)
      */
-    public function konfirmasi($id)
+    public function updateStatus(Request $request, $id)
     {
-        // Cek apakah user adalah admin
         if (!Auth::check() || Auth::user()->role !== 'admin') {
             abort(403, 'Akses hanya untuk admin.');
         }
 
-        // Cari transaksi berdasarkan ID
-        $transaction = Transaction::findOrFail($id);
-
-        // Ubah status menjadi 'dikirim'
-        $transaction->update([
-            'status' => 'dikirim'
+        // 1. Validasi input (menggunakan status Bahasa Indonesia)
+        $request->validate([
+            'status' => 'required|string|in:pending,diproses,dikirim,selesai,dibatalkan',
+            'shipping_notes' => 'nullable|string|max:1000',
         ]);
 
-        return back()->with('success', 'Transaksi telah dikonfirmasi.');
+        $transaction = Transaction::findOrFail($id);
+        $transaction->status = $request->status;
+
+        // Simpan catatan HANYA JIKA statusnya 'dikirim'
+        if ($request->status == 'dikirim') {
+            $transaction->shipping_notes = $request->shipping_notes;
+        }
+
+        $transaction->save();
+
+        return back()->with('success', 'Status transaksi #' . $transaction->id . ' berhasil diubah ke "' . $transaction->status . '".');
     }
 }

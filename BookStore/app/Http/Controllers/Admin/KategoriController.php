@@ -67,7 +67,18 @@ class KategoriController extends Controller
 
     public function destroy(Kategori $kategori)
     {
+        // LANGKAH 1: Cek relasi 'produk' (tunggal) yang ada di Model Anda.
+        // Kita hitung (count) ada berapa produk di dalam kategori ini.
+        if ($kategori->produk()->count() > 0) {
+
+            // LANGKAH 2: JIKA ADA PRODUK (count > 0), tolak penghapusan.
+            return back()->with('error', 'Gagal! Kategori ini tidak bisa dihapus karena masih ada produk di dalamnya.');
+        }
+
+        // LANGKAH 3: JIKA TIDAK ADA PRODUK (count = 0), baru hapus.
+
         $kategori->delete();
-        return back();
+
+        return back()->with('success', 'Kategori berhasil dihapus.');
     }
 }

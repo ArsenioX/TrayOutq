@@ -14,10 +14,15 @@ use App\Http\Controllers\Admin\AdminTransactionController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\PDFController;
-use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\User\UserAboutController;
 use App\Http\Controllers\Admin\AboutUsController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\User\TransactionController;
+use App\Http\Controllers\User\WishlistController;
+use App\Http\Controllers\User\ReviewController;
+use App\Http\Controllers\LanguageController;
+
 
 
 
@@ -41,9 +46,10 @@ Route::get('/redirect', function () {
     return redirect('/login');
 });
 
+Route::get('lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
 // ⬇ Admin Routes
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('produk', ProdukController::class);
     Route::resource('kategori', KategoriController::class);
 
@@ -52,7 +58,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
     // Admin Transactions
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
-    Route::post('/transactions/konfirmasi/{id}', [AdminTransactionController::class, 'konfirmasi'])->name('transactions.konfirmasi');
+    // Ganti 'post' menjadi 'put' karena ini adalah update
+    Route::put('/transactions/update-status/{id}', [AdminTransactionController::class, 'updateStatus'])->name('admin.transactions.updateStatus');
 
     // Rute untuk menampilkan form edit
     Route::get('/about-us', [AboutUsController::class, 'edit'])->name('about.edit');
@@ -65,6 +72,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 // ⬇ User Routes
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/search-suggestions', [UserDashboardController::class, 'searchSuggestions'])->name('search.suggestions');
     Route::get('/about-us', [UserAboutController::class, 'index'])->name('about');
     Route::get('/product/{id}', [UserDashboardController::class, 'showProduct'])->name('product.show');
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
@@ -80,8 +89,14 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::post('/transactions/selesai/{id}', [TransactionController::class, 'terimaPesanan'])->name('transactions.selesai');
     Route::get('/struk/{id}', [PDFController::class, 'cetakStruk'])->name('struk');
 
-    // Chat ke Admin
- 
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+
+    // Tombol untuk menambah/menghapus (toggle)
+    Route::post('/wishlist/toggle/{produk_id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/review/store', [ReviewController::class, 'store'])->name('review.store');
+    Route::put('/review/update/{review}', [ReviewController::class, 'update'])->name('review.update');
+    Route::delete('/review/destroy/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
+   
 });
 
 // ⬇ Fallback Chat Routes (jika tidak pakai prefix)
@@ -98,5 +113,7 @@ Route::middleware('auth')->group(function () {
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+
 
 

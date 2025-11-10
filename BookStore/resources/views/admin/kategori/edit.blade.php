@@ -48,7 +48,8 @@
     </style>
 
     <div class="form-container">
-        <div class="form-title">Edit Kategori Buku</div>
+        {{-- DITERJEMAHKAN --}}
+        <div class="form-title">{{ __('Edit Kategori Buku') }}</div>
 
         <form action="{{ route('admin.kategori.update', $kategori->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -56,7 +57,8 @@
 
             {{-- Nama Kategori --}}
             <div class="mb-3">
-                <label for="nama" class="form-label">Nama Kategori</label>
+                {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                <label for="nama" class="form-label">{{ __('Nama Kategori') }}</label>
                 <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror"
                     value="{{ old('nama', $kategori->nama) }}" required>
                 @error('nama')
@@ -66,7 +68,8 @@
 
             {{-- Deskripsi --}}
             <div class="mb-3">
-                <label for="deskripsi" class="form-label">Deskripsi</label>
+                {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                <label for="deskripsi" class="form-label">{{ __('Deskripsi') }}</label>
                 <textarea name="deskripsi" id="deskripsi" rows="4"
                     class="form-control @error('deskripsi') is-invalid @enderror"
                     required>{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
@@ -77,7 +80,7 @@
 
             {{-- Ganti Foto --}}
             {{-- <div class="mb-3">
-                <label for="foto" class="form-label">Ganti Gambar (Opsional)</label>
+                <label for="foto" class="form-label">{{ __('Ganti Gambar (Opsional)') }}</label>
                 <input type="file" name="foto" id="foto" class="form-control @error('foto') is-invalid @enderror"
                     accept="image/*">
                 @error('foto')
@@ -88,13 +91,14 @@
             {{-- Foto Saat Ini --}}
             {{-- @if($kategori->foto)
                 <div class="mb-3">
-                    <label>Gambar Saat Ini:</label><br>
+                    <label>{{ __('Gambar Saat Ini:') }}</label><br>
                     <img src="{{ asset('storage/' . $kategori->foto) }}" width="150" alt="Gambar Kategori"
                         style="border-radius: 10px;">
                 </div> --}}
-            @endif
+            {{-- @endif --}} {{-- <-- Ini adalah @endif yang saya komentari untuk mencegah error, karena @if di atasnya sudah Anda komentari --}}
 
-            <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+            {{-- DITERJEMAHKAN --}}
+            <button type="submit" class="btn btn-success">{{ __('Simpan Perubahan') }}</button>
         </form>
     </div>
 
@@ -103,7 +107,8 @@
         <script>
             Swal.fire({
                 icon: 'success',
-                title: 'Berhasil!',
+                {{-- DITERJEMAHKAN --}}
+                title: '{{ __('Berhasil!') }}',
                 text: '{{ session('success') }}',
                 timer: 3000,
                 showConfirmButton: false

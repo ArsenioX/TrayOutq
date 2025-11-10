@@ -1,8 +1,3 @@
-{{--
-File: resources/views/user/about.blade.php
-Versi Bootstrap + Script Toggle Read More / Read Less
---}}
-
 @extends('layouts.user')
 
 @section('content')
@@ -12,23 +7,26 @@ Versi Bootstrap + Script Toggle Read More / Read Less
         {{-- 1. BAGIAN STATIS --}}
         {{-- =================================== --}}
         <h1 class="text-center fw-bold mb-4">
-            {{ $about->title ?? 'Nama Toko Belum Diatur' }}
+            {{-- DITERJEMAHKAN (Fallback-nya) --}}
+            {{ $about->title ?? __('Nama Toko Belum Diatur') }}
         </h1>
 
         @if ($about->main_image)
             <div class="d-flex justify-content-center mb-4">
-                <img src="{{ Storage::url($about->main_image) }}" alt="Foto {{ $about->title }}"
+                {{-- DITERJEMAHKAN (Alt text) --}}
+                <img src="{{ Storage::url($about->main_image) }}" alt="{{ __('Foto') }} {{ $about->title }}"
                     class="img-fluid rounded shadow" style="width: 27%; height: 250px; object-fit: cover; ">
             </div>
         @else
             <div class="d-flex align-items-center justify-content-center bg-light rounded mb-4" style="height: 250px;">
-                <span class="text-muted">Foto gedung belum di-upload</span>
+                {{-- DITERJEMAHKAN --}}
+                <span class="text-muted">{{ __('Foto gedung belum di-upload') }}</span>
             </div>
         @endif
 
 
         {{-- =================================== --}}
-        {{-- 2. BAGIAN NARASI --}}
+        {{-- 2. BAGIAN NARASI (Teks dari DB, tidak diubah) --}}
         {{-- =================================== --}}
         <div class="mb-5">
             <div id="narrative-content" class="position-relative overflow-hidden"
@@ -45,7 +43,8 @@ Versi Bootstrap + Script Toggle Read More / Read Less
 
             <div class="text-center mt-2">
                 <button id="narrative-toggle" class="btn btn-link fw-bold text-decoration-none text-primary">
-                    Read more...
+                    {{-- DITERJEMAHKAN --}}
+                    {{ __('Read more...') }}
                 </button>
             </div>
         </div>
@@ -54,10 +53,12 @@ Versi Bootstrap + Script Toggle Read More / Read Less
         {{-- =================================== --}}
         {{-- 3. BAGIAN PRODUK --}}
         {{-- =================================== --}}
-        <h2 class="fw-bold mb-4">Produk Toko Kami</h2>
+        {{-- DITERJEMAHKAN --}}
+        <h2 class="fw-bold mb-4">{{ __('Produk Toko Kami') }}</h2>
 
         @if ($products->isEmpty())
-            <p class="text-muted">Belum ada produk untuk ditampilkan.</p>
+            {{-- DITERJEMAHKAN --}}
+            <p class="text-muted">{{ __('Belum ada produk untuk ditampilkan.') }}</p>
         @else
             <div class="row g-4">
                 @foreach ($products as $product)
@@ -81,7 +82,7 @@ Versi Bootstrap + Script Toggle Read More / Read Less
     </div> {{-- akhir .container --}}
 
     {{-- =================================== --}}
-    {{-- 4. SCRIPT TOGGLE --}}
+    {{-- 4. SCRIPT TOGGLE (Logika tidak diubah) --}}
     {{-- =================================== --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -104,13 +105,15 @@ Versi Bootstrap + Script Toggle Read More / Read Less
                             // Buka
                             content.style.maxHeight = 'none';
                             fade.style.display = 'none';
-                            toggleButton.innerText = 'Read less...';
+                            { { --DITERJEMAHKAN --} }
+                            toggleButton.innerText = '{{ __('Read less...') }}';
                             isExpanded = true;
                         } else {
                             // Tutup
                             content.style.maxHeight = collapsedHeight;
                             fade.style.display = 'block';
-                            toggleButton.innerText = 'Read more...';
+                            { { --DITERJEMAHKAN --} }
+                            toggleButton.innerText = '{{ __('Read more...') }}';
                             isExpanded = false;
                         }
                     });

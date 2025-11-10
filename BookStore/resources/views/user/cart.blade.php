@@ -2,13 +2,15 @@
 
 @section('content')
 <div class="container py-4">
-    <h1 class="mb-4 fw-bold fs-3">🛒 Keranjang Belanja</h1>
+    {{-- DITERJEMAHKAN --}}
+    <h1 class="mb-4 fw-bold fs-3">🛒 {{ __('Keranjang Belanja') }}</h1>
 
     {{-- ✅ Notifikasi SweetAlert2 --}}
     @if (session('success'))
         <script>
             Swal.fire({
-                title: 'Berhasil!',
+                {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                title: '{{ __('Berhasil!') }}',
                 text: "{{ session('success') }}",
                 icon: 'success',
                 timer: 1800,
@@ -19,7 +21,8 @@
     @if (session('error'))
         <script>
             Swal.fire({
-                title: 'Gagal!',
+                {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                title: '{{ __('Gagal!') }}',
                 text: "{{ session('error') }}",
                 icon: 'error'
             });
@@ -32,11 +35,12 @@
                 <table class="table table-striped table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>📚 Produk</th>
-                            <th class="text-center">Qty</th>
-                            <th>💰 Harga</th>
-                            <th>Subtotal</th>
-                            <th class="text-center">🧹 Aksi</th>
+                            {{-- DITERJEMAHKAN --}}
+                            <th>📚 {{ __('Produk') }}</th>
+                            <th class="text-center">{{ __('Qty') }}</th>
+                            <th>💰 {{ __('Harga') }}</th> {{-- Kunci sudah ada --}}
+                            <th>{{ __('Subtotal') }}</th>
+                            <th class="text-center">🧹 {{ __('Aksi') }}</th> {{-- Kunci sudah ada --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -59,16 +63,19 @@
                                 <td>
                                     <div>
                                         <strong>{{ $item->produk->nama }}</strong><br>
-                                        <small class="text-muted">Stok: {{ $item->produk->stok }}</small><br>
+                                        {{-- DITERJEMAHKAN --}}
+                                        <small class="text-muted">{{ __('Stok:') }} {{ $item->produk->stok }}</small><br>
                                         @if ($item->produk->stok < 1)
-                                            <span class="text-danger fw-semibold">❌ Stok habis</span>
+                                            {{-- DITERJEMAHKAN --}}
+                                            <span class="text-danger fw-semibold">❌ {{ __('Stok habis') }}</span>
                                         @elseif ($item->produk->stok < $item->jumlah)
-                                            <span class="text-warning fw-semibold">⚠️ Stok tidak cukup</span>
+                                            {{-- DITERJEMAHKAN --}}
+                                            <span class="text-warning fw-semibold">⚠️ {{ __('Stok tidak cukup') }}</span>
                                         @endif
                                     </div>
                                 </td>
 
-                                {{-- Qty --}}
+                                {{-- Qty (Logika tidak diubah) --}}
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
                                         <form action="{{ route('user.cart.decrease', $item->id) }}" method="POST" class="d-inline">
@@ -97,7 +104,8 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-sm btn-outline-danger delete-btn">
-                                            🗑️ Hapus
+                                            {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                                            🗑️ {{ __('Hapus') }}
                                         </button>
                                     </form>
                                 </td>
@@ -109,14 +117,17 @@
                 {{-- Total & Checkout --}}
                 <div class="d-flex justify-content-between align-items-center mt-4">
                     <div class="fs-5">
-                        <strong>Total:</strong>
+                        {{-- DITERJEMAHKAN --}}
+                        <strong>{{ __('Total:') }}</strong>
                         <span class="fw-bold text-dark">Rp {{ number_format($totalHarga, 0, ',', '.') }}</span>
                     </div>
                     @if ($stokBermasalah)
-                        <button class="btn btn-secondary" disabled>🚫 Tidak bisa checkout (stok bermasalah)</button>
+                        {{-- DITERJEMAHKAN --}}
+                        <button class="btn btn-secondary" disabled>🚫 {{ __('Tidak bisa checkout (stok bermasalah)') }}</button>
                     @else
                         <a href="{{ route('user.checkout.form') }}" class="btn btn-warning fw-semibold">
-                            ✅ Checkout Sekarang
+                            {{-- DITERJEMAHKAN --}}
+                            ✅ {{ __('Checkout Sekarang') }}
                         </a>
                     @endif
                 </div>
@@ -124,7 +135,8 @@
         </div>
     @else
         <div class="alert alert-info text-center mt-4 shadow-sm">
-            🧺 Keranjangmu masih kosong, yuk tambahkan buku!
+            {{-- DITERJEMAHKAN --}}
+            🧺 {{ __('Keranjangmu masih kosong, yuk tambahkan buku!') }}
         </div>
     @endif
 </div>
@@ -135,26 +147,30 @@
         function confirmDelete(form) {
             if (window.Swal) {
                 Swal.fire({
-                    title: 'Hapus Produk?',
-                    text: "Produk akan dihapus dari keranjang!",
+                    {{-- DITERJEMAHKAN --}}
+                    title: '{{ __('Hapus Produk?') }}',
+                    text: "{{ __('Produk akan dihapus dari keranjang!') }}",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
+                    {{-- DITERJEMAHKAN (Kunci sudah ada) --}}
+                    confirmButtonText: '{{ __('Ya, hapus!') }}',
+                    cancelButtonText: '{{ __('Batal') }}'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
                     }
                 });
             } else {
-                if (confirm('Hapus produk dari keranjang?')) {
+                {{-- DITERJEMAHKAN (Fallback) --}}
+                if (confirm('{{ __('Hapus produk dari keranjang?') }}')) {
                     form.submit();
                 }
             }
         }
 
+        // Logika event listener TIDAK DIUBAH
         document.body.addEventListener('click', function (e) {
             const btn = e.target.closest('.delete-btn');
             if (!btn) return;
